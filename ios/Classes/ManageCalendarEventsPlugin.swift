@@ -2,12 +2,8 @@ import Flutter
 import UIKit
 import EventKit
 
-extension Date {
-    var millisecondsSinceEpoch: Double { return self.timeIntervalSince1970 * 1000.0 }
-}
-
-public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
-    let eventStore = EKEventStore()
+public class ManageCalendarEventsPlugin: NSObject, FlutterPlugin {
+let eventStore = EKEventStore()
 
     struct Calendar: Codable {
         let id: String
@@ -43,7 +39,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "manage_calendar_events", binaryMessenger: registrar.messenger())
-        let instance = SwiftManageCalendarEventsPlugin()
+        let instance = ManageCalendarEventsPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
 
@@ -76,7 +72,7 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
           let source = eventStore.sources.first { e in
             return e.sourceType == .local
           }
-          
+
           calendar.source = source;
           calendar.cgColor = UIColor.systemYellow.cgColor;
           do{
@@ -283,8 +279,8 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
                 eventId: ekEvent.eventIdentifier,
                 title: ekEvent.title,
                 description: ekEvent.notes,
-                startDate: Int64(ekEvent.startDate.millisecondsSinceEpoch),
-                endDate: Int64(ekEvent.endDate.millisecondsSinceEpoch),
+                startDate: Int64(ekEvent.startDate.timeIntervalSince1970 * 1000),
+                endDate: Int64(ekEvent.endDate.timeIntervalSince1970 * 1000),
                 location: ekEvent.location,
                 isAllDay: ekEvent.isAllDay,
                 hasAlarm: ekEvent.hasAlarms,
@@ -566,5 +562,3 @@ extension EKParticipant {
         return self.value(forKey: "isOrganiser") as? Bool
     }
 }
-
-
