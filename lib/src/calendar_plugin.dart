@@ -1,8 +1,7 @@
 part of manage_calendar_events;
 
 class CalendarPlugin {
-  static const MethodChannel _channel =
-      const MethodChannel('manage_calendar_events');
+  static const MethodChannel _channel = const MethodChannel('manage_calendar_events');
 
   static Future<String?> get platformVersion async {
     final String? version = await _channel.invokeMethod('getPlatformVersion');
@@ -46,14 +45,21 @@ class CalendarPlugin {
     return calendars;
   }
 
+  /// Returns the available calendars from the device
+  Future<void> createCalendar(Calendar calendar) async {
+    try {
+      await _channel.invokeMethod('createCalendar', calendar.toJson());
+    } catch (e) {
+      print(e);
+    }
+  }
+
   /// Returns all the available events in the selected calendar
   Future<List<CalendarEvent>?> getEvents({required String calendarId}) async {
     List<CalendarEvent>? events = [];
     try {
-      String eventsJson = await _channel.invokeMethod(
-          'getEvents', <String, Object?>{'calendarId': calendarId});
-      events =
-          json.decode(eventsJson).map<CalendarEvent>((decodedCalendarEvent) {
+      String eventsJson = await _channel.invokeMethod('getEvents', <String, Object?>{'calendarId': calendarId});
+      events = json.decode(eventsJson).map<CalendarEvent>((decodedCalendarEvent) {
         return CalendarEvent.fromJson(decodedCalendarEvent);
       }).toList();
     } catch (e) {
@@ -70,14 +76,12 @@ class CalendarPlugin {
   }) async {
     List<CalendarEvent>? events = [];
     try {
-      String eventsJson =
-          await _channel.invokeMethod('getEventsByDateRange', <String, Object?>{
+      String eventsJson = await _channel.invokeMethod('getEventsByDateRange', <String, Object?>{
         'calendarId': calendarId,
         'startDate': startDate.millisecondsSinceEpoch,
         'endDate': endDate.millisecondsSinceEpoch,
       });
-      events =
-          json.decode(eventsJson).map<CalendarEvent>((decodedCalendarEvent) {
+      events = json.decode(eventsJson).map<CalendarEvent>((decodedCalendarEvent) {
         return CalendarEvent.fromJson(decodedCalendarEvent);
       }).toList();
     } catch (e) {
@@ -94,8 +98,7 @@ class CalendarPlugin {
     DateTime startDate = findFirstDateOfTheMonth(findDate);
     DateTime endDate = findLastDateOfTheMonth(findDate);
 
-    return getEventsByDateRange(
-        calendarId: calendarId, startDate: startDate, endDate: endDate);
+    return getEventsByDateRange(calendarId: calendarId, startDate: startDate, endDate: endDate);
   }
 
   /// Returns all the available events on the given date Range
@@ -106,8 +109,7 @@ class CalendarPlugin {
     DateTime startDate = findFirstDateOfTheWeek(findDate);
     DateTime endDate = findLastDateOfTheWeek(findDate);
 
-    return getEventsByDateRange(
-        calendarId: calendarId, startDate: startDate, endDate: endDate);
+    return getEventsByDateRange(calendarId: calendarId, startDate: startDate, endDate: endDate);
   }
 
   /// Helps to create an event in the selected calendar
@@ -132,11 +134,8 @@ class CalendarPlugin {
           'hasAlarm': event.hasAlarm != null ? event.hasAlarm : false,
           'url': event.url,
           'reminder': event.reminder != null ? event.reminder!.minutes : null,
-          'attendees': event.attendees != null
-              ? event.attendees!.attendees
-                  .map((attendee) => attendee.toJson())
-                  .toList()
-              : null,
+          'attendees':
+              event.attendees != null ? event.attendees!.attendees.map((attendee) => attendee.toJson()).toList() : null,
         },
       );
     } catch (e) {
@@ -167,11 +166,8 @@ class CalendarPlugin {
           'hasAlarm': event.hasAlarm != null ? event.hasAlarm : false,
           'url': event.url,
           'reminder': event.reminder != null ? event.reminder!.minutes : null,
-          'attendees': event.attendees != null
-              ? event.attendees!.attendees
-                  .map((attendee) => attendee.toJson())
-                  .toList()
-              : null,
+          'attendees':
+              event.attendees != null ? event.attendees!.attendees.map((attendee) => attendee.toJson()).toList() : null,
         },
       );
     } catch (e) {
@@ -264,8 +260,7 @@ class CalendarPlugin {
   }) async {
     List<Attendee>? attendees;
     try {
-      String attendeesJson =
-          await _channel.invokeMethod('getAttendees', <String, Object?>{
+      String attendeesJson = await _channel.invokeMethod('getAttendees', <String, Object?>{
         'eventId': eventId,
       });
       attendees = json.decode(attendeesJson).map<Attendee>((decodedAttendee) {
@@ -288,8 +283,7 @@ class CalendarPlugin {
         'addAttendees',
         <String, Object?>{
           'eventId': eventId,
-          'attendees':
-              newAttendees.map((attendee) => attendee.toJson()).toList(),
+          'attendees': newAttendees.map((attendee) => attendee.toJson()).toList(),
         },
       );
     } catch (e) {
@@ -324,8 +318,7 @@ class CalendarPlugin {
 
   /// Find the last date of the month which contains the provided date.
   DateTime findLastDateOfTheMonth(DateTime dateTime) {
-    DateTime lastDayOfMonth = DateTime.utc(dateTime.year, dateTime.month + 1, 1)
-        .subtract(Duration(hours: 1));
+    DateTime lastDayOfMonth = DateTime.utc(dateTime.year, dateTime.month + 1, 1).subtract(Duration(hours: 1));
     print('lastDayOfMonth - $lastDayOfMonth');
     return lastDayOfMonth;
   }
@@ -337,7 +330,6 @@ class CalendarPlugin {
 
   /// Find last date of the week which contains provided date.
   DateTime findLastDateOfTheWeek(DateTime dateTime) {
-    return dateTime
-        .add(Duration(days: DateTime.daysPerWeek - dateTime.weekday));
+    return dateTime.add(Duration(days: DateTime.daysPerWeek - dateTime.weekday));
   }
 }

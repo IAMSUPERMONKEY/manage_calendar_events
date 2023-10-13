@@ -21,20 +21,30 @@ class CalendarPluginCheck extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            _myPlugin.hasPermissions().then((value) {
-              if (!value!) {
-                _myPlugin.requestPermissions();
-              } else {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => CalendarList()));
-              }
-            });
-          },
-          child: Text('Show Calendars'),
-        ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(),
+          ElevatedButton(
+            onPressed: () {
+              _myPlugin.hasPermissions().then((value) {
+                if (!value!) {
+                  _myPlugin.requestPermissions();
+                } else {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => CalendarList()));
+                }
+              });
+            },
+            child: Text('Show Calendars'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              _myPlugin.createCalendar(Calendar(id: "supermonkey", name: "supermonkey"));
+            },
+            child: Text('Add Calendars'),
+          ),
+        ],
       ),
     );
   }

@@ -57,6 +57,34 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
         } else if (call.method == "getCalendars") {
             let calendarArrayList = self.getCalendars()
             result(calendarArrayList)
+        } else if(call.method == "createCalendar") {
+          if(self.hasPermissions()) {
+            self.requestPermissions();
+          }
+          let calendar = EKCalendar(for: .event, eventStore: self.eventStore);
+          let arguments = call.arguments as! Dictionary<String, AnyObject>
+          calendar.title = arguments["name"] as! String;
+          for element in self.eventStore.calendars(for: .event) {
+            if element.title == calendar.title {
+              do {
+                try self.eventStore.removeCalendar(element, commit: true)
+              } catch{
+                print("remove calendar error: \(error)")
+              }
+            }
+          }
+          let source = eventStore.sources.first { e in
+            return e.sourceType == .local
+          }
+          
+          calendar.source = source;
+          calendar.cgColor = UIColor.systemYellow.cgColor;
+          do{
+            try eventStore.saveCalendar(calendar, commit: true)
+            print("添加日程类型成功");
+          } catch {
+            print("\(error)")
+          }
         } else if (call.method == "getEvents") {
             let arguments = call.arguments as! Dictionary<String, AnyObject>
             let calendarId = arguments["calendarId"] as! String
@@ -96,7 +124,9 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
             )
             self.createUpdateEvent(calendarId: calendarId, event: &event)
             if arguments["attendees"] as? NSObject != NSNull() {
+              if event.eventId != nil {
                 self.addAttendees(eventId: event.eventId!, arguments: arguments)
+              }
             }
             result(event.eventId)
         } else if (call.method == "deleteEvent") {
@@ -165,10 +195,17 @@ public class SwiftManageCalendarEventsPlugin: NSObject, FlutterPlugin {
     }
 
     private func requestPermissions() {
+      if #available(iOS 17.0, *) {
+        eventStore.requestFullAccessToEvents { accessGranted, error in
+          print("Access Granted\(accessGranted),\(String(describing: error))")
+        }
+      } else {
         eventStore.requestAccess(to: .event, completion: {
             (accessGranted: Bool, error: Error?) in
-            print("Access Granted")
+          print("Access Granted\(accessGranted),\(String(describing: error))")
         })
+      }
+
     }
 
     private func getCalendars() -> String? {
