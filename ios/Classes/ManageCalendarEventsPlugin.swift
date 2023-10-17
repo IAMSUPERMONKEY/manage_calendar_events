@@ -20,6 +20,8 @@ let eventStore = EKEventStore()
         let startDate: Int64
         let endDate: Int64
         let location: String?
+        var latitude: Double? = 0
+        var longitude: Double? = 0
         let isAllDay: Bool
         let hasAlarm: Bool
         let url: String?
@@ -100,6 +102,8 @@ let eventStore = EKEventStore()
             let startDate = arguments["startDate"] as! Int64
             let endDate = arguments["endDate"] as! Int64
             let location = arguments["location"] as? String
+            let latitude = arguments["latitude"] as? Double
+            let longitude = arguments["longitude"] as? Double
             let isAllDay = arguments["isAllDay"] as! Bool
             let hasAlarm = arguments["hasAlarm"] as! Bool
             let url = arguments["url"] as? String
@@ -112,6 +116,8 @@ let eventStore = EKEventStore()
                 startDate: startDate,
                 endDate: endDate,
                 location: location,
+                latitude: latitude,
+                longitude: longitude,
                 isAllDay: isAllDay,
                 hasAlarm: hasAlarm,
                 url: url,
@@ -282,6 +288,8 @@ let eventStore = EKEventStore()
                 startDate: Int64(ekEvent.startDate.timeIntervalSince1970 * 1000),
                 endDate: Int64(ekEvent.endDate.timeIntervalSince1970 * 1000),
                 location: ekEvent.location,
+                latitude: ekEvent.structuredLocation?.geoLocation?.coordinate.latitude,
+                longitude: ekEvent.structuredLocation?.geoLocation?.coordinate.longitude,
                 isAllDay: ekEvent.isAllDay,
                 hasAlarm: ekEvent.hasAlarms,
                 url: ekEvent.url?.absoluteString,
@@ -313,10 +321,18 @@ let eventStore = EKEventStore()
         let endDate = Date (timeIntervalSince1970: Double(event.endDate) / 1000.0)
         let reminder = event.reminder
         let location = event.location
+        let latitude = event.latitude
+        let longitude = event.longitude
         let isAllDay = event.isAllDay
         let url = event.url
 
-        let ekCalendar = self.eventStore.calendar(withIdentifier: calendarId)
+        var ekCalendar:EKCalendar?
+        for ca in self.eventStore.calendars(for: .event) {
+            if ca.calendarIdentifier == calendarId {
+                ekCalendar = ca
+                break
+            }
+        }
         //        if (!(ekCalendar!.allowsContentModifications)) {
         //            return
         //        }
@@ -338,7 +354,11 @@ let eventStore = EKEventStore()
         ekEvent!.calendar = ekCalendar!
         ekEvent!.isAllDay = isAllDay
 
-        if(location != nil) {
+        if(latitude != nil) {
+            let lo = EKStructuredLocation(title: location!)
+            lo.geoLocation = CLLocation(latitude: latitude!, longitude: longitude!)
+            ekEvent!.structuredLocation = lo
+        } else if(location != nil) {
             ekEvent!.location = location
         }
 

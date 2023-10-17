@@ -122,6 +122,8 @@ public class ManageCalendarEventsPlugin implements FlutterPlugin, ActivityAware,
             String description = call.argument("description");
             long startDate = call.argument("startDate");
             long endDate = call.argument("endDate");
+            double latitude = call.argument("latitude");
+            double longitude = call.argument("longitude");
             String location = call.argument("location");
             String url = call.argument("url");
             boolean isAllDay = call.argument("isAllDay");

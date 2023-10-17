@@ -8,7 +8,7 @@ class Calendar {
   bool? isReadOnly;
 
   Calendar({
-    required this.id,
+    this.id,
     this.name,
     this.accountName,
     this.ownerName,
@@ -31,5 +31,10 @@ class Calendar {
     data["ownerName"] = this.ownerName;
     data["isReadOnly"] = this.isReadOnly;
     return data;
+  }
+
+  @override
+  String toString() {
+    return toJson().toString();
   }
 }

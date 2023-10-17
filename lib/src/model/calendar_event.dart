@@ -7,6 +7,8 @@ class CalendarEvent {
   DateTime? startDate;
   DateTime? endDate;
   String? location;
+  double? latitude;
+  double? longitude;
   int? duration;
   bool? isAllDay;
   bool? hasAlarm;
@@ -25,6 +27,8 @@ class CalendarEvent {
     this.isAllDay = false,
     this.hasAlarm = false,
     this.url,
+    this.latitude,
+    this.longitude,
     this.attendees,
     this.reminder,
   });
@@ -42,6 +46,7 @@ class CalendarEvent {
       this.endDate = DateTime.fromMillisecondsSinceEpoch(date);
     }
     this.location = data['location'];
+    this.longitude = data['longitude'];
     this.isAllDay = data['isAllDay'];
     this.hasAlarm = data['hasAlarm'];
     this.url = data['url'];
