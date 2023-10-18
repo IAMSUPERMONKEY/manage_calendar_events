@@ -51,7 +51,7 @@ let eventStore = EKEventStore()
         } else if (call.method == "hasPermissions") {
             result(self.hasPermissions())
         } else if (call.method == "requestPermissions") {
-            self.requestPermissions()
+            self.requestPermissions(result: result)
         } else if (call.method == "getCalendars") {
             let calendarArrayList = self.getCalendars()
             result(calendarArrayList)
@@ -196,15 +196,22 @@ let eventStore = EKEventStore()
         return status == EKAuthorizationStatus.authorized
     }
 
-    private func requestPermissions() {
+    private func requestPermissions(result: FlutterResult? = nil) {
+      print("result ==== \(result != nil)")
       if #available(iOS 17.0, *) {
         eventStore.requestFullAccessToEvents { accessGranted, error in
-          print("Access Granted\(accessGranted),\(String(describing: error))")
+            if(result != nil){
+                result!(accessGranted)
+            }
+          print("Access Granted \(accessGranted),\(String(describing: error))")
         }
       } else {
         eventStore.requestAccess(to: .event, completion: {
             (accessGranted: Bool, error: Error?) in
-          print("Access Granted\(accessGranted),\(String(describing: error))")
+            if(result != nil){
+                result!(accessGranted)
+            }
+          print("Access Granted \(accessGranted),\(String(describing: error))")
         })
       }
 
