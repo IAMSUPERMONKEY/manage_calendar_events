@@ -244,7 +244,15 @@ let eventStore = EKEventStore()
         if(!hasPermissions()) {
             requestPermissions()
         }
-        let selectedCalendar = self.eventStore.calendar(withIdentifier: calendarId)
+        
+        let ekCalendars = self.eventStore.calendars(for: .event)
+        var selectedCalendar: EKCalendar? = nil
+        for ekCalendar in ekCalendars {
+            if(ekCalendar.calendarIdentifier == calendarId){
+                selectedCalendar = ekCalendar
+            }
+        }
+        
         let startDate = NSDate(timeIntervalSinceNow: -60 * 60 * 24 * 180)
         let endDate = NSDate(timeIntervalSinceNow: 60 * 60 * 24 * 180)
         if (selectedCalendar != nil) {
@@ -259,7 +267,14 @@ let eventStore = EKEventStore()
         if(!hasPermissions()) {
             requestPermissions()
         }
-        let selectedCalendar = self.eventStore.calendar(withIdentifier: calendarId)
+        let ekCalendars = self.eventStore.calendars(for: .event)
+        var selectedCalendar: EKCalendar? = nil
+        for ekCalendar in ekCalendars {
+            if(ekCalendar.calendarIdentifier == calendarId){
+                selectedCalendar = ekCalendar
+            }
+        }
+        
         let startDate = Date (timeIntervalSince1970: Double(startDate) / 1000.0)
         let endDate = Date (timeIntervalSince1970: Double(endDate) / 1000.0)
         if (selectedCalendar != nil) {
