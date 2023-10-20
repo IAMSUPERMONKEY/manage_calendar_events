@@ -37,4 +37,6 @@ android {
 dependencies {
     implementation 'com.google.code.gson:gson:2.8.4'
     implementation 'androidx.annotation:annotation:1.2.0'
+
+    implementation 'com.github.getActivity:XXPermissions:18.5'
 }

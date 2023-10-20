@@ -2,9 +2,12 @@ package com.fantastic.manage_calendar_events;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.fantastic.manage_calendar_events.models.Calendar;
 import com.fantastic.manage_calendar_events.models.CalendarEvent;
@@ -22,6 +25,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /**
@@ -38,6 +42,8 @@ public class ManageCalendarEventsPlugin implements FlutterPlugin, ActivityAware,
     private Activity activity;
     private CalendarOperations operations;
 
+    private Result result;
+
     private static void setup(ManageCalendarEventsPlugin plugin, BinaryMessenger binaryMessenger,
                               Activity activity, Context context) {
         plugin.binaryMessenger = binaryMessenger;
@@ -53,7 +59,7 @@ public class ManageCalendarEventsPlugin implements FlutterPlugin, ActivityAware,
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
         Log.d("DART/NATIVE", "onAttachedToEngine");
-        binaryMessenger= flutterPluginBinding.getBinaryMessenger();
+        binaryMessenger = flutterPluginBinding.getBinaryMessenger();
         context = flutterPluginBinding.getApplicationContext();
     }
 
@@ -77,7 +83,7 @@ public class ManageCalendarEventsPlugin implements FlutterPlugin, ActivityAware,
     public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
         Log.d("DART/NATIVE", "onAttachedToActivity");
         activity = binding.getActivity();
-        setup(this, binaryMessenger, activity, context );
+        setup(this, binaryMessenger, activity, context);
     }
 
     @Override
@@ -96,7 +102,8 @@ public class ManageCalendarEventsPlugin implements FlutterPlugin, ActivityAware,
     }
 
     @Override
-    public void onMethodCall(MethodCall call, Result result) {
+    public void onMethodCall(MethodCall call, @NonNull Result result) {
+        this.result = result;
         if (call.method.equals("getPlatformVersion")) {
             result.success("Android " + android.os.Build.VERSION.RELEASE);
         } else if (call.method.equals("hasPermissions")) {
@@ -185,4 +192,19 @@ public class ManageCalendarEventsPlugin implements FlutterPlugin, ActivityAware,
         operations.addAttendees(eventId, attendees);
     }
 
+//    @Override
+//    public boolean onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        Log.d("flutter", "权限返回：requestCode = " + requestCode + ", grantResults = " + grantResults);
+//        if (requestCode == 125) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                // 权限被授予
+//                result.success(true);
+//            } else {
+//                result.success(false);
+//                // 权限被拒绝
+//            }
+//            return true;
+//        }
+//        return false;
+//    }
 }

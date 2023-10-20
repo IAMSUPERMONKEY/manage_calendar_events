@@ -1,5 +1,6 @@
 package com.fantastic.manage_calendar_events;
 
+import android.Manifest;
 import android.Manifest.permission;
 import android.app.Activity;
 import android.content.Context;
@@ -8,15 +9,21 @@ import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.fantastic.manage_calendar_events.models.Calendar;
 import com.fantastic.manage_calendar_events.models.CalendarEvent;
 import com.fantastic.manage_calendar_events.models.CalendarEvent.Reminder;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -24,9 +31,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import io.flutter.plugin.common.MethodChannel;
+
 public class CalendarOperations {
 
-    private static final int MY_CAL_REQ = 101;
+    private static final int MY_CAL_REQ = 125;
     private static final int MY_CAL_WRITE_REQ = 102;
 
     private static final String[] EVENT_PROJECTION =
@@ -48,7 +57,8 @@ public class CalendarOperations {
     private Activity activity;
 
     public CalendarOperations(Activity activity, Context ctx) {
-        this.activity = activity; this.ctx = ctx;
+        this.activity = activity;
+        this.ctx = ctx;
     }
 
 
@@ -68,10 +78,48 @@ public class CalendarOperations {
     }
 
     void requestPermissions() {
-        if (23 <= android.os.Build.VERSION.SDK_INT && activity != null) {
-            String[] permissions = new String[]{permission.WRITE_CALENDAR,
-                    permission.READ_CALENDAR};
+        String[] permissions = new String[]{permission.WRITE_CALENDAR,
+                permission.READ_CALENDAR};
+        if (23 <= Build.VERSION.SDK_INT && activity != null) {
+            Log.d("Flutter", "日历权限 > 6 请求前");
             activity.requestPermissions(permissions, MY_CAL_REQ);
+        }
+    }
+
+    void requestPermissions(MethodChannel.Result result) {
+        if (23 <= Build.VERSION.SDK_INT && activity != null) {
+            Log.d("Flutter", "日历权限 > 6 请求前");
+            XXPermissions.with(activity)
+                    // 申请多个权限
+                    .permission(Permission.Group.CALENDAR)
+                    // 设置权限请求拦截器（局部设置）
+                    //.interceptor(new PermissionInterceptor())
+                    // 设置不触发错误检测机制（局部设置）
+                    //.unchecked()
+                    .request(new OnPermissionCallback() {
+
+                        @Override
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (!allGranted) {
+                                // toast("获取部分权限成功，但部分权限未正常授予");
+                                return;
+                            }
+                            toast("获取录音和日历权限成功");
+                        }
+
+                        @Override
+                        public void onDenied(@NonNull List<String> permissions, boolean doNotAskAgain) {
+                            if (doNotAskAgain) {
+                                // toast("被永久拒绝授权，请手动授予录音和日历权限");
+                                // 如果是被永久拒绝就跳转到应用权限系统设置页面
+                                XXPermissions.startPermissionActivity(context, permissions);
+                            } else {
+                                // toast("获取录音和日历权限失败");
+                            }
+                        }
+                    });
+
+
         }
     }
 

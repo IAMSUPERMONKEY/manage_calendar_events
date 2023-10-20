@@ -355,6 +355,9 @@ let eventStore = EKEventStore()
                 break
             }
         }
+        if(ekCalendar == nil) {
+             return
+        }
         //        if (!(ekCalendar!.allowsContentModifications)) {
         //            return
         //        }
