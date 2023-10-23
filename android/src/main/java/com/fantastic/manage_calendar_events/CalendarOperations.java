@@ -22,6 +22,9 @@ import androidx.core.content.ContextCompat;
 import com.fantastic.manage_calendar_events.models.Calendar;
 import com.fantastic.manage_calendar_events.models.CalendarEvent;
 import com.fantastic.manage_calendar_events.models.CalendarEvent.Reminder;
+import com.hjq.permissions.OnPermissionCallback;
+import com.hjq.permissions.Permission;
+import com.hjq.permissions.XXPermissions;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -30,6 +33,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 import io.flutter.plugin.common.MethodChannel;
 
@@ -81,14 +85,14 @@ public class CalendarOperations {
         String[] permissions = new String[]{permission.WRITE_CALENDAR,
                 permission.READ_CALENDAR};
         if (23 <= Build.VERSION.SDK_INT && activity != null) {
-            Log.d("Flutter", "日历权限 > 6 请求前");
+            Log.d("Flutter", "日历权限 > 6 请求前1");
             activity.requestPermissions(permissions, MY_CAL_REQ);
         }
     }
 
     void requestPermissions(MethodChannel.Result result) {
         if (23 <= Build.VERSION.SDK_INT && activity != null) {
-            Log.d("Flutter", "日历权限 > 6 请求前");
+            Log.d("Flutter", "日历权限 > 6 请求前2");
             XXPermissions.with(activity)
                     // 申请多个权限
                     .permission(Permission.Group.CALENDAR)
@@ -100,19 +104,17 @@ public class CalendarOperations {
 
                         @Override
                         public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
-                            if (!allGranted) {
-                                // toast("获取部分权限成功，但部分权限未正常授予");
-                                return;
-                            }
-                            toast("获取录音和日历权限成功");
+                            Log.d("Flutter", "日历权限 > 6 请求后 allGranted = " + allGranted);
+                            result.success(allGranted);
                         }
 
                         @Override
                         public void onDenied(@NonNull List<String> permissions, boolean doNotAskAgain) {
+                            Log.d("Flutter", "日历权限 > 6 请求后 doNotAskAgain = " + doNotAskAgain);
                             if (doNotAskAgain) {
                                 // toast("被永久拒绝授权，请手动授予录音和日历权限");
                                 // 如果是被永久拒绝就跳转到应用权限系统设置页面
-                                XXPermissions.startPermissionActivity(context, permissions);
+                                XXPermissions.startPermissionActivity(activity, permissions);
                             } else {
                                 // toast("获取录音和日历权限失败");
                             }

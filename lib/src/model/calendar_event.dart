@@ -47,6 +47,7 @@ class CalendarEvent {
     }
     this.location = data['location'];
     this.longitude = data['longitude'];
+    this.latitude = data['latitude'];
     this.isAllDay = data['isAllDay'];
     this.hasAlarm = data['hasAlarm'];
     this.url = data['url'];

@@ -130,13 +130,15 @@ class CalendarPlugin {
           'startDate': event.startDate!.millisecondsSinceEpoch,
           'endDate': event.endDate!.millisecondsSinceEpoch,
           'location': event.location,
+          'latitude': event.latitude,
+          'longitude': event.longitude,
           'isAllDay': event.isAllDay != null ? event.isAllDay : false,
           'hasAlarm': event.hasAlarm != null ? event.hasAlarm : false,
           'url': event.url,
           'reminder': event.reminder != null ? event.reminder!.minutes : null,
           'attendees':
               event.attendees != null ? event.attendees!.attendees.map((attendee) => attendee.toJson()).toList() : null,
-        },
+        }..removeWhere((key, value) => value == null),
       );
     } catch (e) {
       print(e);
@@ -168,7 +170,7 @@ class CalendarPlugin {
           'reminder': event.reminder != null ? event.reminder!.minutes : null,
           'attendees':
               event.attendees != null ? event.attendees!.attendees.map((attendee) => attendee.toJson()).toList() : null,
-        },
+        }..removeWhere((key, value) => value == null),
       );
     } catch (e) {
       print(e);
