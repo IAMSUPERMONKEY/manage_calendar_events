@@ -125,11 +125,11 @@ let eventStore = EKEventStore()
                 attendees: []
             )
             self.createUpdateEvent(calendarId: calendarId, event: &event)
-            if arguments["attendees"] as? NSObject != NSNull() {
-              if event.eventId != nil {
-                self.addAttendees(eventId: event.eventId!, arguments: arguments)
-              }
-            }
+//            if arguments["attendees"] as? NSObject != NSNull() {
+//              if event.eventId != nil {
+//                self.addAttendees(eventId: event.eventId!, arguments: arguments)
+//              }
+//            }
             result(event.eventId)
         } else if (call.method == "deleteEvent") {
             let arguments = call.arguments as! Dictionary<String, AnyObject>
