@@ -138,8 +138,6 @@ class CalendarPlugin {
             event.attendees != null ? event.attendees!.attendees.map((attendee) => attendee.toJson()).toList() : null,
       }..removeWhere((key, value) => value == null);
 
-      print('map = $map');
-
       eventId = await _channel.invokeMethod(
         'createEvent',
         map,
