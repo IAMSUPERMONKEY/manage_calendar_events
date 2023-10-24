@@ -80,8 +80,10 @@ let eventStore = EKEventStore()
           do{
             try eventStore.saveCalendar(calendar, commit: true)
             print("添加日程类型成功");
+            result(true)
           } catch {
             print("\(error)")
+              result(false)
           }
         } else if (call.method == "getEvents") {
             let arguments = call.arguments as! Dictionary<String, AnyObject>

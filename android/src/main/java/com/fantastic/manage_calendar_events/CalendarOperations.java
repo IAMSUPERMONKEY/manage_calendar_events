@@ -2,12 +2,15 @@ package com.fantastic.manage_calendar_events;
 
 import android.Manifest;
 import android.Manifest.permission;
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.CalendarContract;
@@ -32,6 +35,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -244,6 +249,90 @@ public class CalendarOperations {
         ArrayList<CalendarEvent> events = getEvents(selection);
         assert (events.size() == 1);
         return events.get(0);
+    }
+
+    /**
+     * 检查是否存在现有账户，存在则返回账户id，否则返回-1
+     */
+    @SuppressLint("Range")
+    private static int checkCalendarAccount(Context context, String name) {
+        Cursor userCursor = context.getContentResolver().query(CalendarContract.Calendars.CONTENT_URI, null, null, null, null);
+        try {
+            if (userCursor == null) { //查询返回空值
+                return -1;
+            }
+            int count = userCursor.getCount();
+            if (count > 0) {
+                //存在现有账户，取第一个账户的id返回
+                for (int i = 0; i <= count - 1; i++) {
+                    if (i == 0) {
+                        userCursor.moveToFirst();
+                    } else {
+                        userCursor.moveToNext();
+                    }
+                    String type = userCursor.getString(userCursor.getColumnIndex(CalendarContract.Calendars.ACCOUNT_TYPE));
+                    if (type.equals(name)) {
+                        int id = userCursor.getInt(userCursor.getColumnIndex(CalendarContract.Calendars._ID));
+                        Log.d("日历", "check 到了id = " + id);
+                        return id;
+                    }
+                }
+            }
+            return -1;
+        } finally {
+            if (userCursor != null) {
+                userCursor.close();
+            }
+        }
+    }
+
+
+    /**
+     * 添加日历账户，账户创建成功则返回账户id，否则返回-1
+     */
+    public long createCalendar(Object args) {
+        TimeZone timeZone = TimeZone.getDefault();
+        ContentValues value = new ContentValues();
+
+        Map<String, Object> argMap = Utils.fromObject(args);
+
+        String name = Objects.requireNonNull(argMap.get("name")).toString();
+
+        int id = checkCalendarAccount(activity, name);
+        if(id == -1){
+            return (long) id;
+        }
+
+        value.put(CalendarContract.Calendars.NAME, name);
+        value.put(CalendarContract.Calendars.ACCOUNT_NAME, name);
+        value.put(CalendarContract.Calendars.ACCOUNT_TYPE, name);
+        value.put(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, name);
+//        可见度
+        value.put(CalendarContract.Calendars.VISIBLE, 1);
+//        日历颜色
+        value.put(CalendarContract.Calendars.CALENDAR_COLOR, Color.YELLOW);
+//        权限
+        value.put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, CalendarContract.Calendars.CAL_ACCESS_OWNER);
+        value.put(CalendarContract.Calendars.SYNC_EVENTS, 1);
+//        时区
+        value.put(CalendarContract.Calendars.CALENDAR_TIME_ZONE, timeZone.getID());
+        value.put(CalendarContract.Calendars.OWNER_ACCOUNT, name);
+        value.put(CalendarContract.Calendars.CAN_ORGANIZER_RESPOND, 0);
+
+        Uri calendarUri = CalendarContract.Calendars.CONTENT_URI;
+        calendarUri = calendarUri.buildUpon()
+                .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, name)
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, name)
+                .build();
+
+        Uri res = activity.getContentResolver().insert(calendarUri, value);
+        long idRes = -1L;
+        if(res != null) {
+            idRes = ContentUris.parseId(res);
+        }
+        Log.d("日历", "create id = " + idRes);
+        return idRes;
     }
 
     public void createUpdateEvent(String calendarId, CalendarEvent event) {

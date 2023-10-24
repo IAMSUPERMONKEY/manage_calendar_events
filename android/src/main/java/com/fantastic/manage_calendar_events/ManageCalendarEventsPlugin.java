@@ -113,6 +113,9 @@ public class ManageCalendarEventsPlugin implements FlutterPlugin, ActivityAware,
         } else if (call.method.equals("getCalendars")) {
             ArrayList<Calendar> calendarArrayList = operations.getCalendars();
             result.success(gson.toJson(calendarArrayList));
+        } else if (call.method.equals("createCalendar")) {
+             long id = operations.createCalendar(call.arguments);
+             result.success(id);
         } else if (call.method.equals("getEvents")) {
             String calendarId = call.argument("calendarId");
             result.success(gson.toJson(operations.getAllEvents(calendarId)));
