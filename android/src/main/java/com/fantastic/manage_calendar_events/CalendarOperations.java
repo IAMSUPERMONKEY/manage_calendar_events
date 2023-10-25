@@ -278,6 +278,7 @@ public class CalendarOperations {
                     }
                 }
             }
+            Log.d("日历", "check id = " + -1);
             return -1;
         } finally {
             if (userCursor != null) {
@@ -298,8 +299,10 @@ public class CalendarOperations {
 
         String name = Objects.requireNonNull(argMap.get("name")).toString();
 
+        Log.d("日历", "创建日历 create name = " + name);
+
         int id = checkCalendarAccount(activity, name);
-        if(id == -1){
+        if(id != -1) {
             return (long) id;
         }
 
@@ -310,7 +313,7 @@ public class CalendarOperations {
 //        可见度
         value.put(CalendarContract.Calendars.VISIBLE, 1);
 //        日历颜色
-        value.put(CalendarContract.Calendars.CALENDAR_COLOR, Color.YELLOW);
+        value.put(CalendarContract.Calendars.CALENDAR_COLOR, 0xFFFFC600);
 //        权限
         value.put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, CalendarContract.Calendars.CAL_ACCESS_OWNER);
         value.put(CalendarContract.Calendars.SYNC_EVENTS, 1);
@@ -360,12 +363,54 @@ public class CalendarOperations {
             values.put(Events.CUSTOM_APP_URI, event.getUrl());
         }
 
+//        Log.d("日历", "创建调用 title = " + event.isHasAlarm());
         try {
             if (eventId == null) {
                 Uri uri = cr.insert(Events.CONTENT_URI, values);
                 // get the event ID that is the last element in the Uri
                 eventId = Long.parseLong(uri.getLastPathSegment()) + "";
                 event.setEventId(eventId);
+
+                long eId = ContentUris.parseId(uri);
+                Log.d("日历", "创建调用 eId = " + eId);
+
+                //扩展属性 用于高版本安卓系统设置闹钟提醒
+//                if (event.isHasAlarm()) {
+//                    Uri extendedPropUri = CalendarContract.ExtendedProperties.CONTENT_URI;
+//                    extendedPropUri = extendedPropUri.buildUpon()
+//                            .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+//                            .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, "SUPERMONKEY")
+//                            .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, "SUPERMONKEY").
+//                            build();
+//                    ContentValues extendedProperties = new ContentValues();
+//                    extendedProperties.put(CalendarContract.ExtendedProperties.EVENT_ID, eId);
+//                    extendedProperties.put(CalendarContract.ExtendedProperties.VALUE, "{\"need_alarm\":true}");
+//                    extendedProperties.put(CalendarContract.ExtendedProperties.NAME, event.getTitle());
+//                    Uri uriExtended = cr.insert(extendedPropUri, extendedProperties);
+//
+//                    Log.d("日历", "高版本的提醒 = " + uriExtended);
+//                    if (uriExtended == null) {
+//                        //添加事件提醒失败直接返回
+////                        return -1L;
+//                    }
+//                }
+
+//                Log.d("日历", "提醒 分钟 = " + 30);
+//                //事件提醒的设定
+                ContentValues values2 = new ContentValues();
+                values2.put(CalendarContract.Reminders.EVENT_ID, eId);
+                values2.put(CalendarContract.Reminders.MINUTES, 30);
+                values2.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
+//                values2.put("eventTimezone", TimeZone.getDefault().getID());
+//                values2.put(Events.EVENT_TIMEZONE, currentTimeZone);
+                Uri uri2 = cr.insert(CalendarContract.Reminders.CONTENT_URI, values2);
+
+                Log.d("日历", "提醒 uri = " + uri2);
+
+//                if (uri2 == null) { //添加事件提醒失败直接返回
+//                    return -1L;
+//                }
+
             } else {
                 String selection =
                         Events.CALENDAR_ID + " = " + calendarId + " AND " + CalendarContract.Instances._ID
@@ -374,7 +419,7 @@ public class CalendarOperations {
                         null);
             }
         } catch (Exception e) {
-            Log.e("XXX", e.getMessage());
+            Log.e("异常", e.getMessage());
         }
     }
 
