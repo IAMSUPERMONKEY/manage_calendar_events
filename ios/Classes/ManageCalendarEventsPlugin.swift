@@ -143,7 +143,7 @@ let eventStore = EKEventStore()
             let eventId = arguments["eventId"] as! String
             let minutes = arguments["minutes"] as! NSString
             self.addReminder(eventId: eventId, reminder: Reminder(minutes: minutes.longLongValue))
-            reslut(true)
+            result(true)
         } else if (call.method == "updateReminder") {
             let arguments = call.arguments as! Dictionary<String, AnyObject>
             let eventId = arguments["eventId"] as! String
