@@ -56,7 +56,7 @@ let eventStore = EKEventStore()
             let calendarArrayList = self.getCalendars()
             result(calendarArrayList)
         } else if(call.method == "createCalendar") {
-          if(self.hasPermissions()) {
+          if(!self.hasPermissions()) {
             self.requestPermissions();
           }
           let calendar = EKCalendar(for: .event, eventStore: self.eventStore);
@@ -71,8 +71,10 @@ let eventStore = EKEventStore()
               }
             }
           }
+            print("sources = \(eventStore.sources)")
           let source = eventStore.sources.first { e in
-            return e.sourceType == .local
+              print("e = \(e)")
+              return e.sourceType == .local || e.sourceType == .mobileMe || e.sourceType == .subscribed || e.sourceType == .exchange || e.sourceType == .calDAV
           }
 
           calendar.source = source;
@@ -82,7 +84,7 @@ let eventStore = EKEventStore()
             print("添加日程类型成功");
             result(true)
           } catch {
-            print("\(error)")
+            print("\(#line)\(error)")
               result(false)
           }
         } else if (call.method == "getEvents") {
@@ -247,7 +249,7 @@ let eventStore = EKEventStore()
         if(!hasPermissions()) {
             requestPermissions()
         }
-        
+
         let ekCalendars = self.eventStore.calendars(for: .event)
         var selectedCalendar: EKCalendar? = nil
         for ekCalendar in ekCalendars {
@@ -255,7 +257,7 @@ let eventStore = EKEventStore()
                 selectedCalendar = ekCalendar
             }
         }
-        
+
         let startDate = NSDate(timeIntervalSinceNow: -60 * 60 * 24 * 180)
         let endDate = NSDate(timeIntervalSinceNow: 60 * 60 * 24 * 180)
         if (selectedCalendar != nil) {
@@ -277,7 +279,7 @@ let eventStore = EKEventStore()
                 selectedCalendar = ekCalendar
             }
         }
-        
+
         let startDate = Date (timeIntervalSince1970: Double(startDate) / 1000.0)
         let endDate = Date (timeIntervalSince1970: Double(endDate) / 1000.0)
         if (selectedCalendar != nil) {
@@ -382,7 +384,7 @@ let eventStore = EKEventStore()
         ekEvent!.calendar = ekCalendar!
         ekEvent!.isAllDay = isAllDay
 
-        if(latitude != nil) {
+        if(latitude != nil && ekCalendar?.source.sourceType == .local) {
             let lo = EKStructuredLocation(title: location!)
             lo.geoLocation = CLLocation(latitude: latitude!, longitude: longitude!)
             ekEvent!.structuredLocation = lo
@@ -396,8 +398,8 @@ let eventStore = EKEventStore()
 
 
         if(reminder != nil) {
-            let alarm = EKAlarm.init(absoluteDate: Date.init(timeInterval: 1800, since: Date (timeIntervalSince1970: Double(event.startDate) / 1000.0)))
-            ekEvent!.addAlarm(alarm)
+//            let alarm = EKAlarm.init(absoluteDate: Date.init(timeInterval: 1800, since: Date (timeIntervalSince1970: Double(event.startDate) / 1000.0)))
+//            ekEvent!.addAlarm(alarm)
         }
 
         do {
