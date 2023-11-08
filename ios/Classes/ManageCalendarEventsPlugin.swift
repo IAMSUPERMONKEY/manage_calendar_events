@@ -378,19 +378,20 @@ let eventStore = EKEventStore()
         }
 
         ekEvent!.title = title
-        ekEvent!.notes = description
+//         ekEvent!.notes = description
         ekEvent!.startDate = startDate
         ekEvent!.endDate = endDate
         ekEvent!.calendar = ekCalendar!
         ekEvent!.isAllDay = isAllDay
 
-        if(latitude != nil && ekCalendar?.source.sourceType == .local) {
-            let lo = EKStructuredLocation(title: location!)
-            lo.geoLocation = CLLocation(latitude: latitude!, longitude: longitude!)
-            ekEvent!.structuredLocation = lo
-        } else if(location != nil) {
-            ekEvent!.location = location
-        }
+       if(latitude != nil && ekCalendar?.source.sourceType == .local) {
+           let lo = EKStructuredLocation(title: location!)
+           lo.geoLocation = CLLocation(latitude: latitude!, longitude: longitude!)
+           ekEvent!.structuredLocation = lo
+       } else if(location != nil) {
+           ekEvent!.location = description
+       }
+//         ekEvent!.location = description
 
         if(url != nil) {
             ekEvent!.url = URL(string: url ?? "")
