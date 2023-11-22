@@ -384,13 +384,16 @@ let eventStore = EKEventStore()
         ekEvent!.calendar = ekCalendar!
         ekEvent!.isAllDay = isAllDay
 
-       if(latitude != nil && ekCalendar?.source.sourceType == .local) {
+       if(latitude != nil) {
+//        if(latitude != nil && ekCalendar?.source.sourceType == .local) {
+
            let lo = EKStructuredLocation(title: location!)
            lo.geoLocation = CLLocation(latitude: latitude!, longitude: longitude!)
            ekEvent!.structuredLocation = lo
-       } else if(location != nil) {
-           ekEvent!.location = description
        }
+//        else if(location != nil) {
+//           ekEvent!.location = description
+//       }
 //         ekEvent!.location = description
 
         if(url != nil) {
@@ -407,6 +410,14 @@ let eventStore = EKEventStore()
             try self.eventStore.save(ekEvent!, span: .futureEvents)
             event.eventId = ekEvent!.eventIdentifier
         } catch {
+            
+            print("发生异常 == ")
+            // 置空 经纬度，写详细地址
+            ekEvent!.structuredLocation = nil
+            ekEvent!.location = description
+            
+            try? self.eventStore.save(ekEvent!, span: .futureEvents)
+            event.eventId = ekEvent!.eventIdentifier
             self.eventStore.reset()
         }
     }
