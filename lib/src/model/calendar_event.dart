@@ -46,8 +46,8 @@ class CalendarEvent {
       this.endDate = DateTime.fromMillisecondsSinceEpoch(date);
     }
     this.location = data['location'];
-    this.longitude = data['longitude'];
-    this.latitude = data['latitude'];
+    this.longitude = data['longitude'] is int ? data['longitude']?.toDouble() : data['longitude'];
+    this.latitude = data['latitude'] is int ? data['latitude']?.toDouble() : data['latitude'];
     this.isAllDay = data['isAllDay'];
     this.hasAlarm = data['hasAlarm'];
     this.url = data['url'];

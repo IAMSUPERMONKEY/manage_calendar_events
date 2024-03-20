@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 part 'src/calendar_plugin.dart';
 part 'src/model/calendar.dart';

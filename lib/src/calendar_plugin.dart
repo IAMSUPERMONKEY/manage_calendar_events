@@ -84,8 +84,9 @@ class CalendarPlugin {
       events = json.decode(eventsJson).map<CalendarEvent>((decodedCalendarEvent) {
         return CalendarEvent.fromJson(decodedCalendarEvent);
       }).toList();
-    } catch (e) {
-      print(e);
+    } catch (e, s) {
+      debugPrint('e = $e');
+      debugPrint('s = $s');
     }
     return events;
   }
