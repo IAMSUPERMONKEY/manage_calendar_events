@@ -318,7 +318,7 @@ public class CalendarOperations {
         value.put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, CalendarContract.Calendars.CAL_ACCESS_OWNER);
         value.put(CalendarContract.Calendars.SYNC_EVENTS, 1);
 //        时区
-        value.put(CalendarContract.Calendars.CALENDAR_TIME_ZONE, timeZone.getID());
+        value.put(CalendarContract.Calendars.CALENDAR_TIME_ZONE, "Asia/Shanghai");
         value.put(CalendarContract.Calendars.OWNER_ACCOUNT, name);
         value.put(CalendarContract.Events.EVENT_TIMEZONE, "Asia/Shanghai");
         value.put(CalendarContract.Calendars.CAN_ORGANIZER_RESPOND, 0);
@@ -354,6 +354,7 @@ public class CalendarOperations {
         values.put(Events.DESCRIPTION, event.getDescription());
         values.put(Events.CALENDAR_ID, calendarId);
         values.put(Events.EVENT_TIMEZONE, "Asia/Shanghai");
+        values.put(Events.EVENT_END_TIMEZONE, "Asia/Shanghai");
         values.put(Events.ALL_DAY, event.isAllDay());
         values.put(Events.HAS_ALARM, event.isHasAlarm());
         if (event.getLocation() != null) {
