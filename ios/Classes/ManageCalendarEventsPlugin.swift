@@ -383,6 +383,8 @@ let eventStore = EKEventStore()
         ekEvent!.endDate = endDate
         ekEvent!.calendar = ekCalendar!
         ekEvent!.isAllDay = isAllDay
+        let timeZone = TimeZone.init(secondsFromGMT: 8 * 3600)
+        ekEvent!.timeZone = timeZone!
 
        if(latitude != nil) {
 //        if(latitude != nil && ekCalendar?.source.sourceType == .local) {
