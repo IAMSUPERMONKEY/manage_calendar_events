@@ -117,8 +117,7 @@ class _EventListState extends State<EventList> {
 
   // ignore: unused_element
   Future<List<CalendarEvent>?> _fetchEventsByDateRange() async {
-    DateTime endDate =
-        DateTime.now().toUtc().add(Duration(hours: 23, minutes: 59));
+    DateTime endDate = DateTime.now().toUtc().add(Duration(hours: 23, minutes: 59));
     DateTime startDate = endDate.subtract(Duration(days: 3));
     return _myPlugin.getEventsByDateRange(
       calendarId: this.widget.calendarId,
@@ -128,15 +127,17 @@ class _EventListState extends State<EventList> {
   }
 
   void _addEvent() async {
-    DateTime startDate = DateTime.now();
-    DateTime endDate = startDate.add(Duration(hours: 3));
+    DateTime startDate = DateTime(2025, 04, 15, 18);
+    DateTime endDate = startDate.add(Duration(hours: 1));
     CalendarEvent _newEvent = CalendarEvent(
-      title: 'Event from plugin',
+      title: 'Event from plugin222',
       description: 'test plugin description',
       startDate: startDate,
       endDate: endDate,
       location: 'Chennai, Tamilnadu',
       url: 'https://www.google.com',
+      latitude: 113.896299,
+      longitude: 22.562347,
       attendees: Attendees(
         attendees: [
           Attendee(emailAddress: 'test1@gmail.com', name: 'Test1'),
@@ -144,9 +145,7 @@ class _EventListState extends State<EventList> {
         ],
       ),
     );
-    _myPlugin
-        .createEvent(calendarId: widget.calendarId, event: _newEvent)
-        .then((evenId) {
+    _myPlugin.createEvent(calendarId: widget.calendarId, event: _newEvent).then((evenId) {
       setState(() {
         debugPrint('Event Id is: $evenId');
       });
@@ -154,9 +153,7 @@ class _EventListState extends State<EventList> {
   }
 
   void _deleteEvent(String eventId) async {
-    _myPlugin
-        .deleteEvent(calendarId: widget.calendarId, eventId: eventId)
-        .then((isDeleted) {
+    _myPlugin.deleteEvent(calendarId: widget.calendarId, eventId: eventId).then((isDeleted) {
       debugPrint('Is Event deleted: $isDeleted');
     });
   }
@@ -169,9 +166,7 @@ class _EventListState extends State<EventList> {
         Attendee(emailAddress: 'updatetest@gmail.com', name: 'Update Test'),
       ],
     );
-    _myPlugin
-        .updateEvent(calendarId: widget.calendarId, event: event)
-        .then((eventId) {
+    _myPlugin.updateEvent(calendarId: widget.calendarId, event: event).then((eventId) {
       debugPrint('${event.eventId} is updated to $eventId');
     });
 
@@ -183,13 +178,11 @@ class _EventListState extends State<EventList> {
   }
 
   void _addReminder(String eventId, int minutes) async {
-    _myPlugin.addReminder(
-        calendarId: widget.calendarId, eventId: eventId, minutes: minutes);
+    _myPlugin.addReminder(calendarId: widget.calendarId, eventId: eventId, minutes: minutes);
   }
 
   void _updateReminder(String eventId, int minutes) async {
-    _myPlugin.updateReminder(
-        calendarId: widget.calendarId, eventId: eventId, minutes: minutes);
+    _myPlugin.updateReminder(calendarId: widget.calendarId, eventId: eventId, minutes: minutes);
   }
 
   void _deleteReminder(String eventId) async {

@@ -320,7 +320,6 @@ public class CalendarOperations {
 //        时区
         value.put(CalendarContract.Calendars.CALENDAR_TIME_ZONE, "Asia/Shanghai");
         value.put(CalendarContract.Calendars.OWNER_ACCOUNT, name);
-        value.put(CalendarContract.Events.EVENT_TIMEZONE, "Asia/Shanghai");
         value.put(CalendarContract.Calendars.CAN_ORGANIZER_RESPOND, 0);
 
         Uri calendarUri = CalendarContract.Calendars.CONTENT_URI;
@@ -357,6 +356,7 @@ public class CalendarOperations {
         values.put(Events.EVENT_END_TIMEZONE, "Asia/Shanghai");
         values.put(Events.ALL_DAY, event.isAllDay());
         values.put(Events.HAS_ALARM, event.isHasAlarm());
+        Log.d("日历", "创建参数：" + values);
         if (event.getLocation() != null) {
             values.put(Events.EVENT_LOCATION, event.getLocation());
         }

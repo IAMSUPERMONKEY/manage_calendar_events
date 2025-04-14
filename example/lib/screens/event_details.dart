@@ -35,7 +35,7 @@ class _EventDetailsState extends State<EventDetails> {
                 children: <Widget>[
                   Text(
                     'Description: ${this.widget.activeEvent.description}',
-                    style: Theme.of(context).textTheme.headline6,
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   SizedBox(height: 20),
                   Text('Start Date: ${this.widget.activeEvent.startDate}'),
@@ -147,9 +147,7 @@ class _EventDetailsState extends State<EventDetails> {
 
   _addAttendee(String eventId) async {
     var number = Random().nextInt(100);
-    var newAttendee = Attendee(
-        emailAddress: 'attendee$number@gmail.com', name: 'Attendee$number');
-    await widget.calendarPlugin
-        .addAttendees(eventId: eventId, newAttendees: [newAttendee]);
+    var newAttendee = Attendee(emailAddress: 'attendee$number@gmail.com', name: 'Attendee$number');
+    await widget.calendarPlugin.addAttendees(eventId: eventId, newAttendees: [newAttendee]);
   }
 }
