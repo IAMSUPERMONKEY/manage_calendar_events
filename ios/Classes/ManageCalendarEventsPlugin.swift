@@ -62,18 +62,18 @@ let eventStore = EKEventStore()
           let calendar = EKCalendar(for: .event, eventStore: self.eventStore);
           let arguments = call.arguments as! Dictionary<String, AnyObject>
           calendar.title = arguments["name"] as! String;
-//           for element in self.eventStore.calendars(for: .event) {
-//             if element.title == calendar.title {
-//               do {
-//                 try self.eventStore.removeCalendar(element, commit: true)
-//               } catch{
-//                 print("remove calendar error: \(error)")
-//               }
-//             }
-//           }
-//             print("sources = \(eventStore.sources)")
+          for element in self.eventStore.calendars(for: .event) {
+            if element.title == calendar.title {
+              do {
+                try self.eventStore.removeCalendar(element, commit: true)
+              } catch{
+                print("remove calendar error: \(error)")
+              }
+            }
+          }
+            print("sources = \(eventStore.sources)")
           let source = eventStore.sources.first { e in
-//               print("e = \(e)")
+              print("e = \(e)")
               return e.sourceType == .local || e.sourceType == .mobileMe || e.sourceType == .subscribed || e.sourceType == .exchange || e.sourceType == .calDAV
           }
 
@@ -383,8 +383,8 @@ let eventStore = EKEventStore()
         ekEvent!.endDate = endDate
         ekEvent!.calendar = ekCalendar!
         ekEvent!.isAllDay = isAllDay
-        let timeZone = TimeZone.init(secondsFromGMT: 8 * 3600)
-        ekEvent!.timeZone = timeZone!
+//         let timeZone = TimeZone.init(secondsFromGMT: 8 * 3600)
+//         ekEvent!.timeZone = timeZone!
 
        if(latitude != nil) {
 //        if(latitude != nil && ekCalendar?.source.sourceType == .local) {
